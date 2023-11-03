@@ -1,0 +1,114 @@
+{
+  "name": "azure_webapp_application_deployment_failures",
+  "description": "This incident type refers to the failure of deployment for web applications hosted on the Azure WebApp platform. The applications fail to update due to various reasons such as incorrect configuration of deployment sources like Azure DevOps, GitHub, Bitbucket, and errors in deployment logs. The resolution of this incident is to check the logs for errors, verify the application settings, and connection strings.",
+  "params": [
+    {
+      "name": "API_ENDPOINT",
+      "value": ""
+    },
+    {
+      "name": "WEB_APP_NAME",
+      "value": ""
+    },
+    {
+      "name": "RESOURCE_GROUP_NAME",
+      "value": ""
+    },
+    {
+      "name": "DATABASE_CONNECTION_STRING",
+      "value": ""
+    },
+    {
+      "name": "HOST_NAME",
+      "value": ""
+    },
+    {
+      "name": "K8S_CLUSTER_NAME",
+      "value": ""
+    },
+    {
+      "name": "NAMESPACE",
+      "value": ""
+    }
+  ],
+  "cells": [
+    {
+      "name": "cell_1",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Azure WebApp Application Deployment Failures\nThis incident type refers to the failure of deployment for web applications hosted on the Azure WebApp platform. The applications fail to update due to various reasons such as incorrect configuration of deployment sources like Azure DevOps, GitHub, Bitbucket, and errors in deployment logs. The resolution of this incident is to check the logs for errors, verify the application settings, and connection strings."
+    },
+    {
+      "name": "cell_2",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## List all the web apps deployed on Azure"
+    },
+    {
+      "name": "cell_3",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `az webapp list --query '[].name'`"
+    },
+    {
+      "name": "cell_4",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## View the deployment details for a specific web app"
+    },
+    {
+      "name": "cell_5",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `az webapp deployment source show --name ${WEB_APP_NAME} --resource-group ${RESOURCE_GROUP_NAME}`"
+    },
+    {
+      "name": "cell_6",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Check the deployment logs for a specific web app"
+    },
+    {
+      "name": "cell_7",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `az webapp log tail --name ${WEB_APP_NAME} --resource-group ${RESOURCE_GROUP_NAME}`"
+    },
+    {
+      "name": "cell_8",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Verify the application settings for a specific web app"
+    },
+    {
+      "name": "cell_9",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `az webapp config appsettings list --name ${WEB_APP_NAME} --resource-group ${RESOURCE_GROUP_NAME}`"
+    },
+    {
+      "name": "cell_10",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Check the connection string for the specific web app"
+    },
+    {
+      "name": "cell_11",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `az webapp config connection-string list --name ${WEB_APP_NAME} --resource-group ${RESOURCE_GROUP_NAME}`"
+    },
+    {
+      "name": "cell_12",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Verify application settings: Check the application settings to ensure they are correctly configured for the WebApp environment. Verify the database connection strings, API endpoints, and other configuration settings."
+    },
+    {
+      "name": "cell_13",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "host | host_name=$HOST_NAME | invoke_webapp_config_update($API_ENDPOINT, $WEB_APP_NAME, $RESOURCE_GROUP_NAME, $DATABASE_CONNECTION_STRING)"
+    }
+  ]
+}
